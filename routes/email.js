@@ -4,7 +4,7 @@ const Email = require('../models/Email');
 
 router.get('/', async (req, res) => {
     try {
-      const emails = await Email.find({}, 'subject sender receivedAt');
+      const emails = await Email.find({}, 'subject sender body isRead isFavourite receivedAt');
       res.json(emails);
     } catch (err) {
       res.status(500).json({ error: err.message });
