@@ -49,7 +49,6 @@ router.put("/update/:id", async (req, res) => {
     const emailId = req.params.id;
     const updatedData = req.body;
 
-    // Find the email by ID and update it with the new data
     const updatedEmail = await Email.findByIdAndUpdate(
       emailId,
       { $set: updatedData },
@@ -61,6 +60,36 @@ router.put("/update/:id", async (req, res) => {
     }
 
     res.json(updatedEmail);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Get emails with dynamic filtering
+router.get("/filter", async (req, res) => {
+  try {
+    const filter = {};
+
+    Object.keys(req.query).forEach((key) => {
+      if (typeof req.query[key] === "string") {
+        filter[key] = { $regex: req.query[key], $options: "i" };
+      } else {
+        filter[key] = req.query[key];
+      }
+    });
+
+    const emails = await Email.find(
+      filter,
+      "subject sender body isRead isFavourite receivedAt"
+    );
+
+    if (!emails.length) {
+      return res
+        .status(404)
+        .json({ message: "No emails found matching the filter criteria." });
+    }
+
+    res.json(emails);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
