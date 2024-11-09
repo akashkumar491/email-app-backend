@@ -52,7 +52,7 @@ router.put("/update/:id", async (req, res) => {
     const updatedEmail = await Email.findByIdAndUpdate(
       emailId,
       { $set: updatedData },
-      { new: true }
+      { new: true, runValidators: true }
     );
 
     if (!updatedEmail) {
